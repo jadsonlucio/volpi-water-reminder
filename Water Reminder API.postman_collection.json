@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "f3ecf4b9-abbf-4f46-a9af-89b2420b5f18",
+		"name": "Water Reminder API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6499922"
+	},
+	"item": [
+		{
+			"name": "register user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"jadson7\",\n    \"password\": \"qwer1234\",\n    \"first_name\": \"jadson\",\n    \"last_name\": \"lucio\",\n    \"weight\": 65,\n    \"email\": \"jadson10@hotmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_baseUrl}}/register/",
+					"host": [
+						"{{api_baseUrl}}"
+					],
+					"path": [
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var auth_token = pm.response.json()[\"auth_token\"];",
+							"pm.environment.set(\"auth_token\", auth_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"jadson1\",\n    \"password\": \"qwer1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_baseUrl}}/auth/",
+					"host": [
+						"{{api_baseUrl}}"
+					],
+					"path": [
+						"auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "me",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var auth_token = pm.response.json()[\"auth_token\"];",
+							"pm.environment.set(\"auth_token\", auth_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_baseUrl}}/me/",
+					"host": [
+						"{{api_baseUrl}}"
+					],
+					"path": [
+						"me",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get water Consumption",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_baseUrl}}/consumption/?date_before=2023-08-14&date_after=2023-08-14",
+					"host": [
+						"{{api_baseUrl}}"
+					],
+					"path": [
+						"consumption",
+						""
+					],
+					"query": [
+						{
+							"key": "date_before",
+							"value": "2023-08-14"
+						},
+						{
+							"key": "date_after",
+							"value": "2023-08-14"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post water Consumption",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var consumptionRecordId = pm.response.json()[\"id\"];",
+							"pm.environment.set(\"consumptionRecordId\", consumptionRecordId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"date\": \"2023-08-14\",\n    \"consumption_ml\": 200\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_baseUrl}}/consumption/",
+					"host": [
+						"{{api_baseUrl}}"
+					],
+					"path": [
+						"consumption",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch water consumption",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumption_ml\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_baseUrl}}/consumption/{{consumptionRecordId}}/",
+					"host": [
+						"{{api_baseUrl}}"
+					],
+					"path": [
+						"consumption",
+						"{{consumptionRecordId}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete water consumption",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_baseUrl}}/consumption/{{consumptionRecordId}}",
+					"host": [
+						"{{api_baseUrl}}"
+					],
+					"path": [
+						"consumption",
+						"{{consumptionRecordId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
