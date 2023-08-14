@@ -11,7 +11,7 @@ class UserAnatomy(models.Model):
 class WaterConsumptionHistory(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     date = models.DateTimeField()
-    comsumption_ml = models.FloatField()
+    consumption_ml = models.FloatField()
 
 
 class WaterConsumptionDaily(models.Model):

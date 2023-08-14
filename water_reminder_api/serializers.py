@@ -6,6 +6,6 @@ from water_reminder_api.models import WaterConsumptionHistory
 class WaterConsumptionHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = WaterConsumptionHistory
-        fields = ["date", "comsumption_ml", "user", "id"]
+        fields = ["date", "consumption_ml", "user", "id"]
         read_only_fields = ["id"]
         extra_kwargs = {"user": {"write_only": True}}

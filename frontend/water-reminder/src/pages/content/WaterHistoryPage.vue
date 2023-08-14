@@ -46,7 +46,7 @@
               <q-item-section side>
                 <div>
                   <div class="font-bold text-right">
-                    {{ waterConsumptionRecord.comsumption_ml }}ML
+                    {{ waterConsumptionRecord.consumption_ml }}ML
                   </div>
                   <div>Coeficiente 1.0</div>
                 </div>

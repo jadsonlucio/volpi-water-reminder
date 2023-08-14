@@ -43,7 +43,7 @@ export const useWaterConsumptionStore = defineStore('water-consumption', () => {
 
   const currentWaterConsumption = computed(() => {
     const waterConsumption = currentDateConsumptionRecords.value?.reduce(
-      (curr, record) => record.comsumption_ml + curr,
+      (curr, record) => record.consumption_ml + curr,
       0
     );
     if (!waterConsumption) return 0;

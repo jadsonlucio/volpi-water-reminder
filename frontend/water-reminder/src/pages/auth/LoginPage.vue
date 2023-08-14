@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { QBtn, QInput, useQuasar } from 'quasar';
 import { reactive } from 'vue';
-import Logo from '../components/LogoComponent.vue';
+import Logo from 'src/components/LogoComponent.vue';
 import { LoginForm } from 'src/services/interface';
 import { useAuthStore } from 'src/stores/auth';
 import { useRouter } from 'vue-router';

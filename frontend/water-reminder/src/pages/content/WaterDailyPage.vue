@@ -124,7 +124,7 @@ onMounted(async () => {
 const registerWaterConsumption = async () => {
   if (!consumptionML.value) throw new Error('consumption value must be set');
   await consumptionStore.saveCurrentDateConsumptionRecord({
-    comsumption_ml: consumptionML.value,
+    consumption_ml: consumptionML.value,
   });
 };
 

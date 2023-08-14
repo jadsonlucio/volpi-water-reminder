@@ -38,11 +38,11 @@ export interface WaterConsumptionFilter {
 export interface WaterConsumptionForm {
   id?: string;
   date: Date;
-  comsumption_ml: number;
+  consumption_ml: number;
 }
 
 export interface WaterConsumptionRecord {
   id: number;
   date: string;
-  comsumption_ml: number;
+  consumption_ml: number;
 }
