@@ -61,16 +61,24 @@ def get_user_daily_water_consumption_history(
         daily_consumption_statistics = get_water_consumption_statistics(
             daily_goal_consumption, daily_consumption_records_serialized
         )
-        daily_consumptions.append({
-            "total_consumption_ml": daily_consumption_statistics[
-                "total_consumption_ml"
-            ],
-            "date": date,
-            "goal_ml": daily_consumption_statistics["goal_ml"],
-            "percentage_consumption": daily_consumption_statistics[
-                "percentage_consumption"
-            ],
-            "records": daily_consumption_records_serialized,
-        })
+        goal_ml = daily_consumption_statistics["goal_ml"]
+        consumption_ml = daily_consumption_statistics["total_consumption_ml"]
+        remaining_goal = 0
+
+        if goal_ml > consumption_ml:
+            remaining_goal = goal_ml - consumption_ml
+
+        daily_consumptions.append(
+            {
+                "total_consumption_ml": consumption_ml,
+                "date": date,
+                "goal_ml": goal_ml,
+                "remaining_goal": remaining_goal,
+                "percentage_consumption": daily_consumption_statistics[
+                    "percentage_consumption"
+                ],
+                "records": daily_consumption_records_serialized,
+            }
+        )
 
     return {"daily_consumptions": daily_consumptions}

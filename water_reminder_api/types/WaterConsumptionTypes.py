@@ -18,8 +18,8 @@ class DailyConsumption(TypedDict):
     total_consumption_ml: float
     percentage_consumption: float
     goal_ml: float
+    remaining_goal: float
     records: List[WaterConsumptionRecord]
-
 
 class DailyWaterConsumptionHistory(TypedDict):
     daily_consumptions: List[DailyConsumption]
