@@ -5,6 +5,9 @@ from rest_framework import serializers
 
 from water_reminder_api.models import UserAnatomy
 from water_reminder_auth.models import UserAuthSession
+from water_reminder_api.services.WaterConsumptionHistoryService import (
+    get_daily_goal_consumption,
+)
 
 
 class UserSessionSerializer(serializers.ModelSerializer):
@@ -46,4 +49,4 @@ class UserSerializer(serializers.Serializer):
         return user
 
     def get_daily_goal(self, obj):
-        return obj.weight * 35
+        return get_daily_goal_consumption(obj.id)
