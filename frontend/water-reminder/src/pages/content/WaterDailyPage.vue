@@ -16,42 +16,17 @@
       </div>
     </template>
     <template #content>
-      <!-- <div v-if="!loadingDayRecords">
-        <div>Meta do dia: {{ consumptionStatus.dailyGoal }} ML</div>
-        <div>Meta restante: {{ consumptionStatus.remainingGoal }}</div>
-        <div>
-          Meta já consumida: {{ consumptionStatus.currentWaterConsumption }}
-        </div>
-        <div>
-          Meta já consumida (%):
-          {{ consumptionStatus.currentWaterConsumptionPercentage }}
-        </div>
-      </div>
-      <div class="q-pa-md">
-        <q-option-group
-          :options="consumptionOptions"
-          type="radio"
-          v-model="consumptionML"
-        />
-        <QBtn
-          label="Consumir"
-          color="primary"
-          :disable="!consumptionML"
-          @click="registerWaterConsumption"
-        />
-      </div>
-
-      <QDate v-model="form.date"></QDate> -->
       <div class="flex justify-center items-center">
         <q-circular-progress
           show-value
-          :value="consumptionStatus.currentWaterConsumptionPercentage"
+          class="q-ma-md"
           size="400px"
-          :thickness="0.2"
           color="blue"
           center-color="white"
           track-color="grey-3"
-          class="q-ma-md"
+          :value="consumptionStatus.currentWaterConsumptionPercentage"
+          :thickness="0.2"
+          :loading="loadingDayRecords"
         >
           <div
             class="flex flex-col justify-center items-center text-[#2196F3] font-extrabold text-[50px] sm:text-[100%]"
@@ -76,6 +51,7 @@
             <QBtn
               @click="registerWaterConsumption"
               round
+              :loading="loadingDayRecords || savingDayRecords"
               size="lg"
               color="blue"
             >
@@ -106,8 +82,8 @@ import { storeToRefs } from 'pinia';
 
 const authStore = useAuthStore();
 const consumptionStore = useWaterConsumptionStore();
-const { consumptionStatus } = storeToRefs(consumptionStore);
-const loadingDayRecords = ref(true);
+const { consumptionStatus, loadingDayRecords, savingDayRecords } =
+  storeToRefs(consumptionStore);
 const consumptionML = ref<number>(300);
 const form = reactive({ date: moment(moment.now()).format('YYYY/MM/DD') });
 
@@ -133,11 +109,6 @@ const addConsumptionValue = async (addValue: number) => {
 };
 
 watch(form, async () => {
-  try {
-    loadingDayRecords.value = true;
-    await consumptionStore.updateDay(form.date);
-  } finally {
-    loadingDayRecords.value = false;
-  }
+  await consumptionStore.updateDay(form.date);
 });
 </script>

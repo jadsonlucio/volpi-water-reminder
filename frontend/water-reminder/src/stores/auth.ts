@@ -7,7 +7,6 @@ import { useWaterConsumptionStore } from './waterConsumption';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User>();
-  const { dailyConsumptionGoal } = storeToRefs(useWaterConsumptionStore());
 
   const login = async (loginForm: LoginForm) => {
     const authResp = await loginUser(loginForm);
@@ -18,7 +17,6 @@ export const useAuthStore = defineStore('auth', () => {
   const loadUser = async () => {
     const me = await getCurrentUser();
     user.value = me;
-    dailyConsumptionGoal.value = me.daily_goal_ml;
   };
 
   return { user, login, loadUser };

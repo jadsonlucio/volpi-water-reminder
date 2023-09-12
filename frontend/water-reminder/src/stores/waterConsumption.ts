@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { WaterConsumptionForm } from './../services/interface';
 import { defineStore } from 'pinia';
-import { WaterConsumptionRecord } from 'src/services/interface';
+import { WaterConsumptionForm } from 'src/services/interface';
+import { DailyConsumption } from 'src/services/interface';
 import {
   getWaterConsumption,
   saveWaterConsumption,
@@ -9,17 +9,35 @@ import {
 import { computed, ref } from 'vue';
 
 export const useWaterConsumptionStore = defineStore('water-consumption', () => {
-  const dailyConsumptionGoal = ref<number>();
   const currentDateConsumption = ref<Date>();
-  const currentDateConsumptionRecords = ref<WaterConsumptionRecord[]>();
+  const currentDailyConsumption = ref<DailyConsumption>();
+  const savingDayRecords = ref(false);
+  const loadingDayRecords = ref(true)
 
   const updateDay = async (day: string | Date) => {
     if (typeof day == 'string') day = moment(day).toDate();
     currentDateConsumption.value = day;
-    currentDateConsumptionRecords.value = await getWaterConsumption({
-      date_before: day,
-      date_after: day,
-    });
+    try {
+      loadingDayRecords.value = true;
+      const consumption_records = await getWaterConsumption({
+        date_before: day,
+        date_after: day,
+      });
+      if (consumption_records.length == 0) {
+        currentDailyConsumption.value = {
+          date: moment(day).format('YYYY-MM-DD'),
+          records: [],
+          goal_ml: 0,
+          remaining_goal: 0,
+          percentage_consumption: 0,
+          total_consumption_ml: 0,
+        };
+      }
+      const dailyConsumption = consumption_records[0];
+      currentDailyConsumption.value = dailyConsumption;
+    } finally {
+      loadingDayRecords.value = false
+    }
   };
 
   const saveCurrentDateConsumptionRecord = async (
@@ -33,49 +51,40 @@ export const useWaterConsumptionStore = defineStore('water-consumption', () => {
       ...waterConsumptionForm,
       date: currentDateConsumption.value,
     };
-    const consumptionRecord = await saveWaterConsumption(
-      waterConsumptionFormCurrentDate
-    );
-    if (!waterConsumptionForm.id) {
-      currentDateConsumptionRecords.value?.push(consumptionRecord);
+    try {
+      savingDayRecords.value = true;
+      await saveWaterConsumption(waterConsumptionFormCurrentDate);
+      await updateDay(currentDateConsumption.value);
+    } finally {
+      savingDayRecords.value = false;
     }
   };
 
-  const currentWaterConsumption = computed(() => {
-    const waterConsumption = currentDateConsumptionRecords.value?.reduce(
-      (curr, record) => record.consumption_ml + curr,
-      0
-    );
-    if (!waterConsumption) return 0;
-    return waterConsumption;
-  });
-
   const consumptionStatus = computed(() => {
-    if (!dailyConsumptionGoal.value) {
+    if (!currentDailyConsumption.value) {
       return {
         dailyGoal: 0,
-        currentWaterConsumption: currentWaterConsumption.value,
+        currentWaterConsumption: 0,
         remainingGoal: 0,
         currentWaterConsumptionPercentage: 0,
       };
     }
     return {
-      dailyGoal: dailyConsumptionGoal.value,
-      currentWaterConsumption: currentWaterConsumption.value,
-      remainingGoal:
-        dailyConsumptionGoal.value >= currentWaterConsumption.value
-          ? dailyConsumptionGoal.value - currentWaterConsumption.value
-          : 0,
+      dailyGoal: currentDailyConsumption.value.goal_ml,
+      currentWaterConsumption:
+        currentDailyConsumption.value?.total_consumption_ml,
+      remainingGoal: currentDailyConsumption.value.remaining_goal,
       currentWaterConsumptionPercentage: Math.round(
-        (currentWaterConsumption.value / dailyConsumptionGoal.value) * 100
+        currentDailyConsumption.value.percentage_consumption * 100
       ),
     };
   });
 
   return {
-    dailyConsumptionGoal,
-    currentDateConsumptionRecords,
+    currentDailyConsumption,
     consumptionStatus,
+    savingDayRecords,
+    loadingDayRecords,
     updateDay,
     saveCurrentDateConsumptionRecord,
   };
