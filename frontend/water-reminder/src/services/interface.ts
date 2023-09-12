@@ -47,11 +47,12 @@ export interface WaterConsumptionRecord {
   consumption_ml: number;
 }
 
-interface DailyConsumption {
+export interface DailyConsumption {
   date: string
   total_consumption_ml: number
   percentage_consumption: number
   goal_ml: number
+  remaining_goal: number
   records: Array<WaterConsumptionRecord>
 }
 
