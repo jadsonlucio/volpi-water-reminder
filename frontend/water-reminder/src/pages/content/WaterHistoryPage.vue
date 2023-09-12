@@ -14,7 +14,7 @@
         </div>
         <div
           class="flex justify-center"
-          v-if="waterConsumptionRecords?.length == 0"
+          v-if="waterConsumptionDailyRecords?.length == 0"
         >
           <span class="text-lg font-medium"
             >Sem dados coletados durante essa data</span
@@ -28,8 +28,8 @@
             class="rounded-borders overflow-scroll max-h-[500px]"
           >
             <q-item
-              v-for="waterConsumptionRecord in waterConsumptionRecords"
-              :key="waterConsumptionRecord.id"
+              v-for="waterConsumptionRecord in waterConsumptionDailyRecords"
+              :key="waterConsumptionRecord.date"
               clickable
               v-ripple
             >
@@ -39,16 +39,24 @@
               <q-item-section>
                 <q-item-label lines="1">Água</q-item-label>
                 <q-item-label caption>{{
-                  moment(waterConsumptionRecord.date).format('LLLL')
+                  moment(waterConsumptionRecord.date)
+                    .local()
+                    .format('dddd, D [de] MMMM [de] YYYY')
                 }}</q-item-label>
               </q-item-section>
 
               <q-item-section side>
                 <div>
                   <div class="font-bold text-right">
-                    {{ waterConsumptionRecord.consumption_ml }}ML
+                    {{ waterConsumptionRecord.total_consumption_ml }}ML
                   </div>
-                  <div>Coeficiente 1.0</div>
+                  <div>
+                    {{
+                      (
+                        waterConsumptionRecord.percentage_consumption * 100
+                      ).toFixed(0)
+                    }}% da Meta
+                  </div>
                 </div>
               </q-item-section>
             </q-item>
@@ -61,14 +69,19 @@
 
 <script setup lang="ts">
 import moment from 'moment';
+import 'moment/dist/locale/pt-br';
 import AppDateInput from 'src/components/wrappers/AppDateInput.vue';
 import { reactive, ref, watch } from 'vue';
-import { WaterConsumptionRecord } from 'src/services/interface';
+import { WaterConsumptionDailyHistory } from 'src/services/interface';
 import { getWaterConsumption } from 'src/services/waterConsumption';
 import AppScreenTemplate from 'src/components/AppScreenTemplate.vue';
+
+moment.locale('pt-br');
+
 const inputFormat = 'YYYY-MM-DD';
 const loadingRecords = ref(false);
-const waterConsumptionRecords = ref<WaterConsumptionRecord[]>();
+const waterConsumptionDailyRecords =
+  ref<WaterConsumptionDailyHistory['daily_consumptions']>();
 const filterForm = reactive({
   date: {
     to: moment().format(inputFormat),
@@ -81,7 +94,7 @@ watch(
   async (filterForm) => {
     try {
       loadingRecords.value = true;
-      waterConsumptionRecords.value = await getWaterConsumption({
+      waterConsumptionDailyRecords.value = await getWaterConsumption({
         date_after: moment(filterForm.date.from).toDate(),
         date_before: moment(filterForm.date.to).toDate(),
       });

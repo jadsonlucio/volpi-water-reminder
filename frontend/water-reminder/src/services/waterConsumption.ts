@@ -3,12 +3,13 @@ import {
   WaterConsumptionFilter,
   WaterConsumptionRecord,
   WaterConsumptionForm,
+  WaterConsumptionDailyHistory,
 } from './interface';
 import moment from 'moment';
 
 export const getWaterConsumption = async (
   filterForm: WaterConsumptionFilter
-): Promise<WaterConsumptionRecord[]> => {
+): Promise<WaterConsumptionDailyHistory['daily_consumptions']> => {
   const filterFormProcessed: { date_before?: string; date_after?: string } = {};
   if (filterForm.date_after)
     filterFormProcessed.date_after = moment(filterForm.date_after).format(
@@ -22,7 +23,7 @@ export const getWaterConsumption = async (
     params: filterFormProcessed,
   });
 
-  return data;
+  return data['daily_consumptions'];
 };
 
 export const registerWaterConsumption = async (
